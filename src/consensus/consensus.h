@@ -31,6 +31,19 @@ static const unsigned int MAX_TX_SIGOPS_LEGACY = MAX_BLOCK_SIGOPS_LEGACY / 5;
 /** The minimum amount for the value of a P2CS output */
 static const CAmount MIN_COLDSTAKING_AMOUNT = 1 * COIN;
 
+/** Masternode collateral Tiers*/
+bool isMasternodeCollateral(CAmount nValue) const { 
+    return (nValue == nTier1mCollateral || nValue == nTier5mCollateral || nValue == nTier20mCollateral || nValue == nTier100mCollateral); 
+}
+static const CAmount Tier1mCollateral = 1000000 * COIN;
+static const int Tier1mProbability = 1;
+static const CAmount Tier5mCollateral = 5000000 * COIN;
+static const int Tier5mProbability = 5;
+static const CAmount Tier20mCollateral = 20000000 * COIN;
+static const int Tier20mProbability = 20;
+static const CAmount Tier100mCollateral = 100000000 * COIN;
+static const int Tier100mProbability = 100;
+
 /** The default maximum reorganization depth **/
 static const int DEFAULT_MAX_REORG_DEPTH = 100;
 

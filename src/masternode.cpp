@@ -11,8 +11,10 @@
 #include "masternode-sync.h"
 #include "masternodeman.h"
 #include "netbase.h"
+#include "consensus/consensus.h"
 #include "sync.h"
 #include "util.h"
+#include "coins.h"
 #include "wallet/wallet.h"
 
 #define MASTERNODE_MIN_CONFIRMATIONS_REGTEST 1
@@ -33,6 +35,19 @@
 // keep track of the scanning errors I've seen
 std::map<uint256, int> mapSeenMasternodeScanningErrors;
 
+static int GetMasternodeTierRounds(CTxIn vin)
+{
+    LOCK(cs_main);
+    CCoinsViewCache cache(pcoinsTip);
+    const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
+    if (coins && coins->IsAvailable(vin.prevout.n) && isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
+        if (coins->vout[vin.prevout.n].nValue == Tier1mCollateral) return Tier1mProbability;
+        if (coins->vout[vin.prevout.n].nValue == Tier5mCollateral) return Tier5mProbability;
+        if (coins->vout[vin.prevout.n].nValue == Tier20mCollateral) return Tier20mProbability;
+        if (coins->vout[vin.prevout.n].nValue == Tier100mCollateral) return Tier100mProbability;
+    }
+    return 1;
+}
 
 int MasternodeMinPingSeconds()
 {
@@ -147,6 +162,10 @@ bool CMasternode::UpdateFromNewBroadcast(CMasternodeBroadcast& mnb)
 //
 uint256 CMasternode::CalculateScore(const uint256& hash) const
 {
+    int nRounds = GetMasternodeTierRounds(vin);
+
+    uint256 r;
+
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
     ss << hash;
     const uint256& hash2 = ss.GetHash();
@@ -154,17 +173,26 @@ uint256 CMasternode::CalculateScore(const uint256& hash) const
     CHashWriter ss2(SER_GETHASH, PROTOCOL_VERSION);
     ss2 << hash;
     const uint256& aux = vin.prevout.hash + vin.prevout.n;
-    ss2 << aux;
-    const uint256& hash3 = ss2.GetHash();
+    for (int i = 0; i < nRounds; ++i) {
+        ss2 << aux;
+        uint256 hash3 = ss2.GetHash();
 
-    return (hash3 > hash2 ? hash3 - hash2 : hash2 - hash3);
+        uint256 hashdiff = (hash3 > hash2 ? hash3 - hash2 : hash2 - hash3);
+
+        r = std::max(hashdiff, r);
+    }
 }
 
 CMasternode::state CMasternode::GetActiveState() const
 {
     LOCK(cs);
     if (fCollateralSpent) {
-        return MASTERNODE_VIN_SPENT;
+        CCoinsViewCache cache(pcoinsTip);
+        const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
+        if(!coins || !coins->IsAvailable(vin.prevout.n) || !isMasternodeCollateral(coins->vout[vin.prevout.n].nValue))
+        {
+            return MASTERNODE_VIN_SPENT;
+        }
     }
     if (!IsPingedWithin(MasternodeRemovalSeconds())) {
         return MASTERNODE_REMOVE;
@@ -195,7 +223,7 @@ bool CMasternode::IsInputAssociatedWithPubkey() const
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, txVin, hash, true)) {
         for (CTxOut out : txVin.vout) {
-            if (out.nValue == 10000 * COIN && out.scriptPubKey == payee) return true;
+            if (out.nValue == isMasternodeCollateral(vout[i].nValue) && out.scriptPubKey == payee) return true;
         }
     }
 
@@ -499,6 +527,12 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
             // not mnb fault, let it to be checked again later
             mnodeman.mapSeenMasternodeBroadcast.erase(GetHash());
             masternodeSync.mapSeenSyncMNB.erase(GetHash());
+            return false;
+        }
+        CCoinsViewCache cache(pcoinsTip);
+        const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
+        if (!coins || !coins->IsAvailable(vin.prevout.n) || !isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
+            state.IsInvalid(nDoS);
             return false;
         }
         nChainHeight = chainActive.Height();
