@@ -40,7 +40,7 @@ static int GetMasternodeTierRounds(CTxIn vin)
 {
     LOCK(cs_main);
     CCoinsViewCache cache(pcoinsTip);
-    const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
+    const Coin* coins = cache.AccessCoins(vin.prevout.hash);
     if (coins && coins->IsAvailable(vin.prevout.n) && Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
         if (coins->vout[vin.prevout.n].nValue == Params().Tier1mCollateral()) return Params().Tier1mProbability();
         if (coins->vout[vin.prevout.n].nValue == Params().Tier5mCollateral()) return Params().Tier5mProbability();
@@ -189,7 +189,7 @@ CMasternode::state CMasternode::GetActiveState() const
     LOCK(cs);
     if (fCollateralSpent) {
         CCoinsViewCache cache(pcoinsTip);
-        const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
+        const Coin* coins = cache.AccessCoins(vin.prevout.hash);
         if(!coins || !coins->IsAvailable(vin.prevout.n) || !Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue))
         {
             return MASTERNODE_VIN_SPENT;
@@ -531,7 +531,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
             return false;
         }
         CCoinsViewCache cache(pcoinsTip);
-        const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
+        const Coin* coins = cache.AccessCoins(vin.prevout.hash);
         if (!coins || !coins->IsAvailable(vin.prevout.n) || !Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
             state.IsInvalid(nDoS);
             return false;
