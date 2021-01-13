@@ -10,6 +10,7 @@
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternodeman.h"
+#include "chainparams.h"
 #include "netbase.h"
 #include "consensus/consensus.h"
 #include "sync.h"
@@ -40,11 +41,11 @@ static int GetMasternodeTierRounds(CTxIn vin)
     LOCK(cs_main);
     CCoinsViewCache cache(pcoinsTip);
     const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
-    if (coins && coins->IsAvailable(vin.prevout.n) && isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
-        if (coins->vout[vin.prevout.n].nValue == Tier1mCollateral) return Tier1mProbability;
-        if (coins->vout[vin.prevout.n].nValue == Tier5mCollateral) return Tier5mProbability;
-        if (coins->vout[vin.prevout.n].nValue == Tier20mCollateral) return Tier20mProbability;
-        if (coins->vout[vin.prevout.n].nValue == Tier100mCollateral) return Tier100mProbability;
+    if (coins && coins->IsAvailable(vin.prevout.n) && Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
+        if (coins->vout[vin.prevout.n].nValue == Params().Tier1mCollateral()) return Params().Tier1mProbability();
+        if (coins->vout[vin.prevout.n].nValue == Params().Tier5mCollateral()) return Params().Tier5mProbability();
+        if (coins->vout[vin.prevout.n].nValue == Params().Tier20mCollateral()) return Params().Tier20mProbability();
+        if (coins->vout[vin.prevout.n].nValue == Params().Tier100mCollateral()) return Params().Tier100mProbability();
     }
     return 1;
 }
@@ -189,7 +190,7 @@ CMasternode::state CMasternode::GetActiveState() const
     if (fCollateralSpent) {
         CCoinsViewCache cache(pcoinsTip);
         const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
-        if(!coins || !coins->IsAvailable(vin.prevout.n) || !isMasternodeCollateral(coins->vout[vin.prevout.n].nValue))
+        if(!coins || !coins->IsAvailable(vin.prevout.n) || !Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue))
         {
             return MASTERNODE_VIN_SPENT;
         }
@@ -223,7 +224,7 @@ bool CMasternode::IsInputAssociatedWithPubkey() const
     uint256 hash;
     if(GetTransaction(vin.prevout.hash, txVin, hash, true)) {
         for (CTxOut out : txVin.vout) {
-            if (out.nValue == isMasternodeCollateral(vout[i].nValue) && out.scriptPubKey == payee) return true;
+            if (out.nValue == Params().isMasternodeCollateral(vout[i].nValue) && out.scriptPubKey == payee) return true;
         }
     }
 
@@ -531,7 +532,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
         }
         CCoinsViewCache cache(pcoinsTip);
         const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
-        if (!coins || !coins->IsAvailable(vin.prevout.n) || !isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
+        if (!coins || !coins->IsAvailable(vin.prevout.n) || !Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
             state.IsInvalid(nDoS);
             return false;
         }

@@ -224,6 +224,15 @@ public:
         pchMessageStart[3] = 0xe9;
         nDefaultPort = 51479;
 
+        nTier1mCollateral = 1000000 * COIN;
+        nTier1mProbability = 1;
+        nTier5mCollateral = 5000000 * COIN;
+        nTier5mProbability = 5;
+        nTier20mCollateral = 20000000 * COIN;
+        nTier20mProbability = 20;
+        nTier100mCollateral = 100000000 * COIN;
+        nTier100mProbability = 100;
+
         // Note that of those with the service bits flag, most only support a subset of possible options
         //vSeeds.emplace_back("fuzzbawls.pw", "yieldstakingwallet.seed.fuzzbawls.pw", true);     // Primary DNS Seeder from Fuzzbawls
         //vSeeds.emplace_back("fuzzbawls.pw", "yieldstakingwallet.seed2.fuzzbawls.pw", true);    // Secondary DNS Seeder from Fuzzbawls
@@ -325,6 +334,15 @@ public:
         pchMessageStart[2] = 0xd5;
         pchMessageStart[3] = 0xca;
         nDefaultPort = 51474;
+
+        nTier1mCollateral = 1000000 * COIN;
+        nTier1mProbability = 1;
+        nTier5mCollateral = 5000000 * COIN;
+        nTier5mProbability = 5;
+        nTier20mCollateral = 20000000 * COIN;
+        nTier20mProbability = 20;
+        nTier100mCollateral = 100000000 * COIN;
+        nTier100mProbability = 100;
 
         vFixedSeeds.clear();
         vSeeds.clear();
@@ -456,6 +474,15 @@ public:
         pchMessageStart[2] = 0x7e;
         pchMessageStart[3] = 0xac;
         nDefaultPort = 51476;
+
+        nTier1mCollateral = 1000000 * COIN;
+        nTier1mProbability = 1;
+        nTier5mCollateral = 5000000 * COIN;
+        nTier5mProbability = 5;
+        nTier20mCollateral = 20000000 * COIN;
+        nTier20mProbability = 20;
+        nTier100mCollateral = 100000000 * COIN;
+        nTier100mProbability = 100;
 
         vFixedSeeds.clear(); //! Testnet mode doesn't have any fixed seeds.
         vSeeds.clear();      //! Testnet mode doesn't have any DNS seeds.

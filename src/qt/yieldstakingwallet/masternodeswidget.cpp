@@ -15,6 +15,7 @@
 #include "fs.h"
 #include "guiutil.h"
 #include "init.h"
+#include "chainparams.h"
 #include "masternode-sync.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
@@ -476,7 +477,7 @@ void MasterNodesWidget::onCreateMNClicked()
         return;
     }
 
-    if (walletModel->getBalance() <= (isMasternodeCollateral(vout[i].nValue))) {
+    if (walletModel->getBalance() <= (Params().isMasternodeCollateral(vout[i].nValue))) {
         inform(tr("Not enough balance to create a masternode, 10,000 %1 required.").arg(CURRENCY_UNIT.c_str()));
         return;
     }

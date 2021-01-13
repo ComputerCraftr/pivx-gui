@@ -8,7 +8,7 @@
 #include "activemasternode.h"
 #include "optionsmodel.h"
 #include "pairresult.h"
-#include "src/consensus/consensus.h"
+#include "chainparams.h"
 #include "qt/yieldstakingwallet/mnmodel.h"
 #include "qt/yieldstakingwallet/guitransactionsutils.h"
 #include "qt/yieldstakingwallet/qtutils.h"
@@ -214,7 +214,7 @@ bool MasterNodeWizardDialog::createMN()
                 QString::fromStdString(dest.ToString()),
                 QString::fromStdString(alias),
                 //CAmount(10000) * COIN,
-                isMasternodeCollateral(vout[i].nValue),
+                Params().isMasternodeCollateral(vout[i].nValue),
                 "");
 
         // Send the 10 tx to one of your address
@@ -264,7 +264,7 @@ bool MasterNodeWizardDialog::createMN()
         int indexOut = -1;
         for (int i=0; i < (int)walletTx->vout.size(); i++) {
             CTxOut& out = walletTx->vout[i];
-            if (out.nValue == isMasternodeCollateral(vout[i].nValue)) {
+            if (out.nValue == Params().isMasternodeCollateral(vout[i].nValue)) {
                 indexOut = i;
                 break;
             }

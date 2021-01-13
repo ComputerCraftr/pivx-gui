@@ -66,6 +66,17 @@ public:
 
     const CBlock& GenesisBlock() const { return genesis; }
 
+    // Collateral params
+    bool isMasternodeCollateral(CAmount nValue) const { return (nValue == nTier1mCollateral || nValue == nTier5mCollateral || nValue == nTier20mCollateral || nValue == nTier100mCollateral); }
+    CAmount Tier1mCollateral() const { return nTier1mCollateral; }
+    CAmount Tier1mProbability() const { return nTier1mProbability; }
+    CAmount Tier5mCollateral() const { return nTier5mCollateral; }
+    CAmount Tier5mProbability() const { return nTier5mProbability; }
+    CAmount Tier20mCollateral() const { return nTier20mCollateral; }
+    CAmount Tier20mProbability() const { return nTier20mProbability; }
+    CAmount Tier100mCollateral() const { return nTier100mCollateral; }
+    CAmount Tier100mProbability() const { return nTier100mProbability; }
+
     /** Make miner wait to have peers to avoid wasting work */
     bool MiningRequiresPeers() const { return !IsRegTestNet(); }
     /** Headers first syncing is disabled */
@@ -94,6 +105,14 @@ protected:
     Consensus::Params consensus;
     CMessageHeader::MessageStartChars pchMessageStart;
     int nDefaultPort;
+    CAmount nTier1mCollateral;
+    CAmount nTier1mProbability;
+    CAmount nTier5mCollateral;
+    CAmount nTier5mProbability;
+    CAmount nTier20mCollateral;
+    CAmount nTier20mProbability;
+    CAmount nTier100mCollateral;
+    CAmount nTier100mProbability;
     std::vector<CDNSSeedData> vSeeds;
     std::vector<unsigned char> base58Prefixes[MAX_BASE58_TYPES];
     std::string bech32HRPs[MAX_BECH32_TYPES];
