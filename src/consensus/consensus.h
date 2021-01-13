@@ -32,7 +32,7 @@ static const unsigned int MAX_TX_SIGOPS_LEGACY = MAX_BLOCK_SIGOPS_LEGACY / 5;
 static const CAmount MIN_COLDSTAKING_AMOUNT = 1 * COIN;
 
 /** Masternode collateral Tiers*/
-bool isMasternodeCollateral(CAmount nValue) const { 
+bool isMasternodeCollateral(CAmount nValue) { 
     return (nValue == Tier1mCollateral || nValue == Tier5mCollateral || nValue == Tier20mCollateral || nValue == Tier100mCollateral); 
 }
 CAmount Tier1mCollateral = 1000000 * COIN;
