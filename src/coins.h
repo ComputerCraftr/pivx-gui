@@ -393,7 +393,7 @@ public:
      * more efficient than GetCoin. Modifications to other cache entries are
      * allowed while accessing the returned pointer.
      */
-    const Coin* AccessCoin(const COutPoint& outpoint) const;
+    const Coin* AccessCoins(const COutPoint& outpoint) const;
 
     /**
      * Add a coin. Set potential_overwrite to true if a non-pruned version may
