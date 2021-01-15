@@ -481,8 +481,6 @@ bool CZerocoinDB::WipeAccChecksums()
     return true;
 }
 
-namespace {
-
 //! Legacy class to deserialize pre-pertxout database entries without reindex.
 class CCoins
 {
@@ -539,8 +537,6 @@ public:
         return (nPos < vout.size() && !vout[nPos].IsNull() && !vout[nPos].scriptPubKey.IsZerocoinMint());
     }
 };
-
-}
 
 /** Upgrade the database from older formats.
  *
