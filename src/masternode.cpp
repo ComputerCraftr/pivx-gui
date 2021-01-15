@@ -16,6 +16,7 @@
 #include "sync.h"
 #include "util.h"
 #include "coins.h"
+#include "txdb.h"
 #include "wallet/wallet.h"
 
 #define MASTERNODE_MIN_CONFIRMATIONS_REGTEST 1
@@ -40,7 +41,7 @@ static int GetMasternodeTierRounds(CTxIn vin)
 {
     LOCK(cs_main);
     CCoinsViewCache cache(pcoinsTip);
-    const Coin* coins = cache.AccessCoin(vin.prevout.hash);
+    const CCoins* coins = cache.AccessCoin(vin.prevout.hash);
     if (coins && coins->IsAvailable(vin.prevout.n) && Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
         if (coins->vout[vin.prevout.n].nValue == Params().Tier1mCollateral()) return Params().Tier1mProbability();
         if (coins->vout[vin.prevout.n].nValue == Params().Tier5mCollateral()) return Params().Tier5mProbability();

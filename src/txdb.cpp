@@ -532,6 +532,12 @@ public:
         // coinbase height
         ::Unserialize(s, VARINT(nHeight));
     }
+
+    //! check whether a particular output is still available
+    bool IsAvailable(unsigned int nPos) const
+    {
+        return (nPos < vout.size() && !vout[nPos].IsNull() && !vout[nPos].scriptPubKey.IsZerocoinMint());
+    }
 };
 
 }
