@@ -139,11 +139,11 @@ void CCoinsViewCache::SpendCoin(const COutPoint& outpoint, Coin* moveout)
 
 static const Coin coinEmpty;
 
-const Coin& CCoinsViewCache::AccessCoin(const COutPoint& outpoint) const
+const CCoins* CCoinsViewCache::AccessCoin(const uint256& txid) const
 {
-    CCoinsMap::const_iterator it = FetchCoin(outpoint);
+    CCoinsMap::const_iterator it = FetchCoin(txid);
     if (it == cacheCoins.end()) {
-        return coinEmpty;
+        return NULL;
     } else {
         return it->second.coin;
     }
