@@ -190,7 +190,7 @@ CMasternode::state CMasternode::GetActiveState() const
     LOCK(cs);
     if (fCollateralSpent) {
         CCoinsViewCache cache(pcoinsTip);
-        const Coin* coins = cache.AccessCoins(vin.prevout.hash);
+        const CCoins* coins = cache.AccessCoins(vin.prevout.hash);
         if(!coins || !coins->IsAvailable(vin.prevout.n) || !Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue))
         {
             return MASTERNODE_VIN_SPENT;
@@ -532,7 +532,7 @@ bool CMasternodeBroadcast::CheckInputsAndAdd(int& nDoS)
             return false;
         }
         CCoinsViewCache cache(pcoinsTip);
-        const Coin* coins = cache.AccessCoin(vin.prevout.hash);
+        const CCoins* coins = cache.AccessCoin(vin.prevout.hash);
         if (!coins || !coins->IsAvailable(vin.prevout.n) || !Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
             state.IsInvalid(nDoS);
             return false;
