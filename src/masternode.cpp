@@ -41,7 +41,7 @@ static int GetMasternodeTierRounds(CTxIn vin)
 {
     LOCK(cs_main);
     CCoinsViewCache cache(pcoinsTip);
-    const CCoins* coins = cache.AccessCoins(vin.prevout).out;
+    const Coin* coins = cache.AccessCoins(vin.prevout);
     if (coins && coins->IsAvailable(vin.prevout.n) && Params().isMasternodeCollateral(coins->vout[vin.prevout.n].nValue)) {
         if (coins->vout[vin.prevout.n].nValue == Params().Tier1mCollateral()) return Params().Tier1mProbability();
         if (coins->vout[vin.prevout.n].nValue == Params().Tier5mCollateral()) return Params().Tier5mProbability();
